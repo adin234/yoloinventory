@@ -62,6 +62,8 @@ exports.get_item_details = (req, res, next) => {
 
         if (!end) {
             end = moment().add(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+        } else {
+            end = moment(end, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
         }
 
         Item.get_item(req.params.id, filter_start, end, send_response);
@@ -102,6 +104,8 @@ exports.get_items_table = (req, res, next) => {
 
         if (!end) {
             end = moment().add(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+        } else {
+            end = moment(end, 'MM/DD/YYYY HH:mm:ss').add(1, 'days').format('YYYY-MM-DD HH:mm:ss')
         }
 
         Item.get_all(get_details);
