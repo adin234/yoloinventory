@@ -96,6 +96,8 @@ exports.get_items_table = (req, res, next) => {
 
         if (!filter_start) {
             filter_start = '1970-01-01 00:00:00';
+        } else {
+            filter_start = moment(filter_start, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
         }
 
         if (!end) {
