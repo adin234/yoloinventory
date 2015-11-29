@@ -129,9 +129,9 @@ exports.get_item_details = (req, res, next) => {
     }
 
     function compute_return() {
-        output.tr_in = output.transactions.tr_in[0] && output.transactions.tr_in[0].qty;
-        output.tr_out = output.transactions.tr_out[0] && output.transactions.tr_out[0].qty;
-        output.dr = output.transactions.dr[0] && output.transactions.dr[0].qty;
+        output.tr_in = (output.transactions.tr_in[0] && output.transactions.tr_in[0].qty) || 0;
+        output.tr_out = (output.transactions.tr_out[0] && output.transactions.tr_out[0].qty) || 0;
+        output.dr = (output.transactions.dr[0] && output.transactions.dr[0].qty)  || 0;
 
         if (output.transactions.tr_in.length > 1) {
             output.tr_in = output.transactions.tr_in.reduce(function (item1, item2) {
