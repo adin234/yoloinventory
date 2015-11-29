@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<style type="text/css">
+			#content {
+				max-width: 1000px;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="content" class="row">
+			<div class="col m12 s12">
+				<div class="card-panel">
+					<div class="row" style="margin-bottom: -10px;">
+						<a href="/inventory"><i class="material-icons">list</i></a>
+					</div>
+					<div class="row">
+						<form class="col m12 s12" method="GET" onSubmit="return validate(this);">
+							<div class="row">
+								<div class="input-field col m2 offset-m7 s5">
+									<input data-value="{#query}{start}{/query}" name="start" id="startDate" type="text" class="datepicker">
+									<label for="startDate">Start</label>
+								</div>
+								<div class="input-field col m2 s5">
+									<input data-value="{#query}{end}{/query}" name="end" id="endDate" type="text" class="datepicker">
+									<label for="endDate">End</label>
+								</div>
+								<button class="btn waves-effect waves-light col m1 s2" type="submit" style="margin-top: 15px;">
+									<i class="material-icons">send</i>
+								</button>
+							</div>
+						</form>
+					</div>
+					<div class="row">
+						<div class="col s6">
+							<h3>{data.meta.item_name}</h3>
+							<h5>({data.meta.item_code})</h5>
+							<i><h6>{data.meta.item_desc}</h6></i>
+						</div>
+						<div class="col s6">
+							<style type="text/css">
+								dl {
+									font-size: 15px;
+								}
+								dt, dd { display: inline; margin: 0; }
+								dd:after {
+									content: '\A';
+									white-space: pre;
+								}
+								dt {
+									font-weight: bold;
+								}
+							</style>
+							<dl>
+								{#data}
+									<dt>Begin Qty: </dt>
+									<dd>{begin}</dd>
+									<dt>Tr In Qty: </dt>
+									<dd>{tr_in}</dd>
+									<dt>Tr Out Qty: </dt>
+									<dd>{tr_out}</dd>
+									<dt>Dr Qty: </dt>
+									<dd>{dr}</dd>
+									<dt>End Qty: </dt>
+									<dd>{end}</dd>
+								{/data}
+							</dl>
+						</div>
+					</div>
+					<div class="row">
+						<h4>Transactions</h4>
+						<div class="col m12 s12">
+							<table class="bordered striped responsive-table">
+								<thead>
+									<tr>
+										<th style="text-align: center">Item Code</th>
+										<th style="text-align: center">Qty</th>
+										<th style="text-align: center">Unit</th>
+										<th style="text-align: center">Transaction</th>
+										<th style="text-align: center">Type</th>
+										<th style="text-align: center">Date</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									{#data.transactions.flat}
+										<tr>
+											<td style="text-align:center">{item_code}</td>
+											<td style="text-align:right">{qty}</td>
+											<td style="text-align:center">{unit}</td>
+											<td style="text-align:right">{dr_number}</td>
+											<td style="text-align:right">{type}</td>
+											<td style="text-align:right">{date}</td>
+										</tr>
+									{/data.transactions.flat}
+									<!-- {#data.transactions.tr_in}
+										<tr>
+											<td style="text-align:center">{item_code}</td>
+											<td style="text-align:right">{qty}</td>
+											<td style="text-align:center">{unit}</td>
+											<td style="text-align:right">{dr_number}</td>
+											<td style="text-align:right">{date}</td>
+										</tr>
+									{/data.transactions.tr_in}
+									{#data.transactions.tr_out}
+										<tr>
+											<td style="text-align:center">{item_code}</td>
+											<td style="text-align:right">{qty}</td>
+											<td style="text-align:center">{unit}</td>
+											<td style="text-align:right">{dr_number}</td>
+											<td style="text-align:right">{date}</td>
+										</tr>
+									{/data.transactions.tr_out}
+									{#data.transactions.dr}
+										<tr>
+											<td style="text-align:center">{item_code}</td>
+											<td style="text-align:right">{qty}</td>
+											<td style="text-align:center">{unit}</td>
+											<td style="text-align:right">{dr_number}</td>
+											<td style="text-align:right">{date}</td>
+										</tr>
+									{/data.transactions.dr} -->
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
+		
+		<script type="text/javascript">
+			$('.datepicker').pickadate({
+				format: 'mm/dd/yyyy'
+			});
+
+			function validate(form) {
+				var form = $(form);
+				var getData = {};
+				
+				if($('input[name=end]').val().trim().length > 0) {
+					getData.end = $('input[name=end]').val().trim();
+				}
+
+				if($('input[name=start]').val().trim().length > 0) {
+					getData.start = $('input[name=start]').val().trim();
+				}
+
+				if (~window.location.href.indexOf('?')) {
+					window.location.href = window.location.href.replace(/\?.*/, '?' + $.param(getData));
+				} else {
+					window.location.href = window.location.href + '?' + $.param(getData);
+				}
+
+				return false;				
+			}
+		</script>
+	</body>
+</html>

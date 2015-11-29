@@ -17,6 +17,9 @@ module.exports = (router) => {
     router.post('/items', __.item.post_item);
     router.get('/items', __.item.get_items_table);
 
+    router.get('/inventory/', __.item.render_table);
+    router.get('/inventory/:id', __.item.render_item);
+
     router.all('*', (req, res) => {
         res.status(404)
             .send({message: 'Nothing to do here.'});

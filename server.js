@@ -10,6 +10,7 @@ const mysql       = require('anytv-node-mysql');
 const body_parser = require('body-parser');
 const winston     = require('winston');
 const express     = require('express');
+const cons        = require('consolidate');
 
 let app;
 let handler;
@@ -25,6 +26,9 @@ function start () {
     // set config
     config.use(process.env.NODE_ENV);
     app.set('env', config.ENV);
+    app.set('view engine', 'dustjs-linkedin');
+    app.set('views', config.VIEWS_DIR);
+    app.engine('dust', cons.dust);
 
     // configure logger
     winston.cli();

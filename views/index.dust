@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<style type="text/css">
+			#content {
+				max-width: 1000px;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="content" class="row">
+			<div class="col m12 s12">
+				<div class="card-panel">
+					<div class="row">
+						<form class="col m12 s12" method="GET" onSubmit="return validate(this);">
+							<div class="row">
+								<div class="input-field col m2 offset-m7 s5">
+									<input data-value="{#query}{start}{/query}" name="start" id="startDate" type="text" class="datepicker">
+									<label for="startDate">Start</label>
+								</div>
+								<div class="input-field col m2 s5">
+									<input data-value="{#query}{end}{/query}" name="end" id="endDate" type="text" class="datepicker">
+									<label for="endDate">End</label>
+								</div>
+								<button class="btn waves-effect waves-light col m1 s2" type="submit" style="margin-top: 15px;">
+									<i class="material-icons">send</i>
+								</button>
+							</div>
+						</form>
+					</div>
+					<div class="row">
+						<div class="col m12 s12">
+							<table class="bordered striped responsive-table">
+								<thead>
+									<tr>
+										<th style="text-align: center" colspan="2">Item Code</th>
+										<th style="text-align: center" colspan="3">Item Name</th>
+										<th style="text-align: center" colspan="1">Begin Qty</th>
+										<th style="text-align: center" colspan="1">TR In Qty</th>
+										<th style="text-align: center" colspan="1">TR Out Qyt</th>
+										<th style="text-align: center" colspan="1">Dr Qty</th>
+										<th style="text-align: center" colspan="1">Ending Qty</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									{#data}
+										<tr>
+											<td colspan="2"><a href="/inventory/{meta.item_code}">{meta.item_code}</a></td>
+											<td colspan="3">{meta.item_name}</td>
+											<td colspan="1" style="text-align:right">{begin}</td>
+											<td colspan="1" style="text-align:right">{tr_in}</td>
+											<td colspan="1" style="text-align:right">{tr_out}</td>
+											<td colspan="1" style="text-align:right">{dr}</td>
+											<td colspan="1" style="text-align:right">{end}</td>
+										</tr>
+									{:else}
+										<tr>
+											<td colspan="10" style="text-align:center">No Data</td>
+										</tr>
+									{/data}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
+		
+		<script type="text/javascript">
+			$('.datepicker').pickadate({
+				format: 'mm/dd/yyyy'
+			});
+
+			function validate(form) {
+				var form = $(form);
+				var getData = {};
+				
+				if($('input[name=end]').val().trim().length > 0) {
+					getData.end = $('input[name=end]').val().trim();
+				}
+
+				if($('input[name=start]').val().trim().length > 0) {
+					getData.start = $('input[name=start]').val().trim();
+				}
+
+				if (~window.location.href.indexOf('?')) {
+					window.location.href = window.location.href.replace(/\?.*/, '?' + $.param(getData));
+				} else {
+					window.location.href = window.location.href + '?' + $.param(getData);
+				}
+
+				return false;				
+			}
+		</script>
+	</body>
+</html>

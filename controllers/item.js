@@ -140,3 +140,37 @@ exports.get_items_table = (req, res, next) => {
 
     start();
 }
+
+exports.render_table = (req, res, next) => {
+    let _res = {
+        data: {},
+        items: function (data) {
+            _res.data = data;
+            _res.query = req.query;
+
+            return _res;
+        },
+        send: function () {
+            res.render('index.dust', _res);
+        }
+    };
+
+    exports.get_items_table(req, _res, next);
+}
+
+exports.render_item = (req, res, next) => {
+    let _res = {
+        data: {},
+        item: function (data) {
+            _res.data = data;
+            _res.query = req.query;
+            
+            return _res;
+        },
+        send: function () {
+            res.render('item.dust', _res);
+        }
+    };
+
+    exports.get_item_details(req, _res, next);
+}

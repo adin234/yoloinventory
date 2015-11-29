@@ -22,7 +22,7 @@ exports.get_item = (code, filter_start, end, next) => {
 	function start() {
 		mysql.use('master')
             .query('SELECT * FROM items WHERE item_code = ?', [code], retrieve_item)
-            .query('SELECT * FROM transactions WHERE item_code = ? AND date >= ? AND date < ?', 
+            .query('SELECT * FROM transactions WHERE item_code = ? AND date >= ? AND date < ? ORDER BY date asc', 
                 [code, filter_start, end], retrive_transactions)
             .end();
 	}
@@ -43,15 +43,17 @@ exports.get_item = (code, filter_start, end, next) => {
     }
 
     function retrive_transactions(err, result) {
-        output.transactions = { tr_in : [], tr_out: [], dr: [] };
+        output.transactions = { tr_in : [], tr_out: [], dr: [], flat: [] };
         if (err) {
             winston.warn(err);
             result = [];
         }
 
         result.forEach(function(item) {
+        	item.date = moment(item.date).format('MM/DD/YYYY HH:mm:ss');
             output.transactions[item.type.replace('-', '_')]
                 .push(item);
+            output.transactions.flat.push(item);
         });
 
         finalize_value();
