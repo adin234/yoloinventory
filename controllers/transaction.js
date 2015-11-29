@@ -87,7 +87,7 @@ exports.upload_items = (req, res, next) => {
 
     function start () {
         const file_path = req.file.path;
-        let columns = ['item_code', 'item_name', 'item_desc']; 
+        let columns = ['item_code', 'item_name', 'item_desc', 'item_beg_qty']; 
 
         parse_csv(file_path, columns, on_new_record, on_error, done);
     }
@@ -132,7 +132,7 @@ exports.upload_items = (req, res, next) => {
         let values = [];
 
         records.forEach(function (item) {
-            values.push([item.item_code, item.item_name, item.item_desc]);
+            values.push([item.item_code, item.item_name, item.item_desc, item.item_beg_qty]);
         });
 
         //console.log(values);
