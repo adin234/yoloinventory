@@ -8,6 +8,7 @@
     "anytv-node-error-handler": "latest",
     "anytv-node-importer": "latest",
     "anytv-node-mysql": "latest",
+    "async": "^1.5.0",
     "body-parser": "^1.14.1",
     "compression": "^1.6.0",
     "csv-parse": "^1.0.1",

@@ -3,7 +3,9 @@
 const mysql   = require('anytv-node-mysql');
 const winston = require('winston');
 const moment  = require('moment');
+const async   = require('async');
 const util    = require('../helpers/util');
+const Item    = require('../models/item');
 
 exports.post_item = (req, res, next) => {
     const data = util.get_data({
@@ -60,100 +62,71 @@ exports.get_item_details = (req, res, next) => {
             end = moment().add(1, 'days').format('YYYY-MM-DD HH:mm:ss');
         }
 
-        mysql.use('master')
-            .query('SELECT * FROM items WHERE item_code = ?', req.params.id, retrieve_item)
-            .query('SELECT * FROM transactions WHERE item_code = ? AND date >= ? AND date < ?', 
-                [req.params.id, filter_start, end], retrive_transactions)
-            .end();
+        Item.get_item(req.params.id, filter_start, end, send_response);
     }
 
-    function retrieve_item (err, result) {
-        if (err) {
-            winston.warn(err);
-            output.begin = 0;
-        } else if (!result.length) {
-            return next('Invalid item code');
-        }
-
-        output.begin = result[0].item_beg_qty;
-
-        finalize_value();
-    }
-
-    function retrive_transactions(err, result) {
-        output.transactions = { tr_in : [], tr_out: [], dr: [] };
-        if (err) {
-            winston.warn(err);
-            result = [];
-        }
-
-        result.forEach(function(item) {
-            output.transactions[item.type.replace('-', '_')]
-                .push(item);
-        });
-
-        finalize_value();
-    }
-
-    function finalize_value() {
-        if (!--async && !data.start) {
-            compute_return();
-        } else if (!async) {
-            mysql.use('master')
-                .query('SELECT * FROM transactions WHERE item_code = ? AND date < ?', 
-                    [req.params.id, filter_start],
-                    update_begin)
-                .end();
-        }
-    }
-
-    function update_begin(err, result) {
+    function send_response (err, result) {
         if (err) {
             return next(err);
         }
 
-        result.forEach(function (item) {
-            switch (item.type) {
-                case 'dr':
-                case 'tr-out':
-                    output.begin -= item.qty;
-                    break;
-                case 'tr-in':
-                    output.begin += item.qty;
-            }
-        });
-
-        async++;
-        data.start = null;
-        finalize_value();
+        res.item(result)
+            .send();
     }
 
-    function compute_return() {
-        output.tr_in = (output.transactions.tr_in[0] && output.transactions.tr_in[0].qty) || 0;
-        output.tr_out = (output.transactions.tr_out[0] && output.transactions.tr_out[0].qty) || 0;
-        output.dr = (output.transactions.dr[0] && output.transactions.dr[0].qty)  || 0;
+    start();
+}
 
-        if (output.transactions.tr_in.length > 1) {
-            output.tr_in = output.transactions.tr_in.reduce(function (item1, item2) {
-                return (item1.qty || item1) + item2.qty;
-            });
+exports.get_items_table = (req, res, next) => {
+    const data = util.get_data({
+            _start: '',
+            _end: ''
+        }, req.query);
+    
+    let filter_start = data.start;
+    let end = data.end;
+    let parallel = []
+
+    function start () {
+        if (data instanceof Error) {
+            throw data
         }
 
-        if (output.transactions.tr_out.length > 1) {
-            output.tr_out = output.transactions.tr_out.reduce(function (item1, item2) {
-                return (item1.qty || item1) + item2.qty;
-            });
+        if (!filter_start) {
+            filter_start = '1970-01-01 00:00:00';
         }
 
-        if (output.transactions.dr.length > 1) {
-            output.dr = output.transactions.dr.reduce(function (item1, item2) {
-                return (item1.qty || item1) + item2.qty;
-            });
+        if (!end) {
+            end = moment().add(1, 'days').format('YYYY-MM-DD HH:mm:ss');
         }
 
-        output.end = output.begin - output.tr_out - output.dr + output.tr_in;
+        Item.get_all(get_details);
+    }
 
-        res.item(output)
+    function get_details(err, result) {
+        if (err) {
+            return next(err);
+        }
+
+        if (!result.length) {
+            return next('No items in database');
+        }
+
+        result.forEach(function (item) {
+            parallel.push(function (done) {
+                Item.get_item(item.item_code, filter_start, end, done)
+            });
+        });
+
+        async.parallel(parallel, send_response);
+    }
+
+    function send_response (err, result) {
+        if (err) {
+            return next(err);
+        }
+
+        res.items(result)
             .send();
     }
 

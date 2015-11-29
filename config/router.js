@@ -14,7 +14,8 @@ module.exports = (router) => {
     router.post('/upload/items', upload.single('items'), __.transaction.upload_items);
     router.post('/upload/:type', upload.single('dr'), __.transaction.upload_transactions);
 
-    router.post('/items/', __.item.post_item);
+    router.post('/items', __.item.post_item);
+    router.get('/items', __.item.get_items_table);
 
     router.all('*', (req, res) => {
         res.status(404)
