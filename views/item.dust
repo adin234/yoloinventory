@@ -68,25 +68,35 @@
 								<dl class="col sm 6">
 									{#data}
 										<dt>Begin Qty: </dt>
-										<dd>{begin}{meta.item_unit}</dd>
+										<dd>
+											{@eq key=begin value=0}-{:else}{begin} {meta.item_unit}{@eq key=begin value=1}{:else}S{/eq}{/eq}
+										</dd>
 										<dt>Tr In Qty: </dt>
-										<dd>{tr_in}{meta.item_unit}</dd>
+										<dd>
+											{@eq key=tr_in value=0}-{:else}{tr_in} {meta.item_unit}{@eq key=tr_in value=1}{:else}S{/eq}{/eq}
+										</dd>
 										<dt>Tr Out Qty: </dt>
-										<dd>{tr_out}{meta.item_unit}</dd>
+										<dd>
+											{@eq key=tr_out value=0}-{:else}{tr_out} {meta.item_unit}{@eq key=tr_out value=1}{:else}S{/eq}{/eq}
+										</dd>
 										<dt>Dr Qty: </dt>
-										<dd>{dr}{meta.item_unit}</dd>
+										<dd>
+											{@eq key=dr value=0}-{:else}{dr} {meta.item_unit}{@eq key=dr value=1}{:else}S{/eq}{/eq}
+										</dd>
 										<dt>End Qty: </dt>
-										<dd>{end}{meta.item_unit}</dd>
+										<dd>
+											{@eq key=end value=0}-{:else}{end} {meta.item_unit}{@eq key=end value=1}{:else}S{/eq}{/eq}
+										</dd>
 									{/data}
 								</dl>
 								<dl class="col sm 6">
 									{#data}
 										<dt>Tr In: </dt>
-										<dd>{@size key=data.transactions.tr_in /}{meta.item_unit}</dd>
+										<dd>{@size key=data.transactions.tr_in /}</dd>
 										<dt>Tr Out: </dt>
-										<dd>{@size key=data.transactions.tr_out /}{meta.item_unit}</dd>
+										<dd>{@size key=data.transactions.tr_out /}</dd>
 										<dt>Dr: </dt>
-										<dd>{@size key=data.transactions.dr /}{meta.item_unit}</dd>
+										<dd>{@size key=data.transactions.dr /}</dd>
 									{/data}
 								</dl>
 							</div>
