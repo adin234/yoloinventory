@@ -117,7 +117,7 @@ exports.get_items_table = (req, res, next) => {
         }
 
         if (!result.length) {
-            return next('No items in database');
+            return send_response(null, []);
         }
 
         result.forEach(function (item) {
@@ -161,7 +161,7 @@ exports.render_table = (req, res, next) => {
 exports.render_item = (req, res, next) => {
     let _res = {
         data: {},
-        item: function (data) {
+        item : function (data) {
             _res.data = data;
             _res.query = req.query;
             

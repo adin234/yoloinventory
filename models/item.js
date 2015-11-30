@@ -8,7 +8,7 @@ const util    = require('../helpers/util');
 exports.get_all = (next) => {
 	function start() {
 		mysql.use('master')
-			.query('SELECT * FROM items', [], next)
+			.query('SELECT * FROM items ORDER BY item_name asc', [], next)
 			.end();
 	}
 

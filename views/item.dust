@@ -21,15 +21,24 @@
 					<div class="row">
 						<form class="col m12 s12" method="GET" onSubmit="return validate(this);">
 							<div class="row">
-								<div class="input-field col m2 offset-m7 s5">
+								<div class="input-field offset-m5 col m2 s3">
+									<select name="type">
+										<option value="" selected>Type</option>
+										<option value="tr-out" {@eq key=query.type value="tr-out"}selected{/eq}>Tr Out</option>
+										<option value="tr-in" {@eq key=query.type value="tr-in"}selected{/eq}>Tr In</option>
+										<option value="dr" {@eq key=query.type value="dr"}selected{/eq}>Dr</option>
+									</select>
+									<label>Materialize Select</label>
+								</div>
+								<div class="input-field col m2 s3">
 									<input data-value="{#query}{start}{/query}" name="start" id="startDate" type="text" class="datepicker">
 									<label for="startDate">Start</label>
 								</div>
-								<div class="input-field col m2 s5">
+								<div class="input-field col m2 s3">
 									<input data-value="{#query}{end}{/query}" name="end" id="endDate" type="text" class="datepicker">
 									<label for="endDate">End</label>
 								</div>
-								<button class="btn waves-effect waves-light col m1 s2" type="submit" style="margin-top: 15px;">
+								<button class="btn waves-effect waves-light col m1 s3" type="submit" style="margin-top: 15px;">
 									<i class="material-icons">send</i>
 								</button>
 							</div>
@@ -55,20 +64,32 @@
 									font-weight: bold;
 								}
 							</style>
-							<dl>
-								{#data}
-									<dt>Begin Qty: </dt>
-									<dd>{begin}</dd>
-									<dt>Tr In Qty: </dt>
-									<dd>{tr_in}</dd>
-									<dt>Tr Out Qty: </dt>
-									<dd>{tr_out}</dd>
-									<dt>Dr Qty: </dt>
-									<dd>{dr}</dd>
-									<dt>End Qty: </dt>
-									<dd>{end}</dd>
-								{/data}
-							</dl>
+							<div class="row">
+								<dl class="col sm 6">
+									{#data}
+										<dt>Begin Qty: </dt>
+										<dd>{begin}{meta.item_unit}</dd>
+										<dt>Tr In Qty: </dt>
+										<dd>{tr_in}{meta.item_unit}</dd>
+										<dt>Tr Out Qty: </dt>
+										<dd>{tr_out}{meta.item_unit}</dd>
+										<dt>Dr Qty: </dt>
+										<dd>{dr}{meta.item_unit}</dd>
+										<dt>End Qty: </dt>
+										<dd>{end}{meta.item_unit}</dd>
+									{/data}
+								</dl>
+								<dl class="col sm 6">
+									{#data}
+										<dt>Tr In: </dt>
+										<dd>{@size key=data.transactions.tr_in /}{meta.item_unit}</dd>
+										<dt>Tr Out: </dt>
+										<dd>{@size key=data.transactions.tr_out /}{meta.item_unit}</dd>
+										<dt>Dr: </dt>
+										<dd>{@size key=data.transactions.dr /}{meta.item_unit}</dd>
+									{/data}
+								</dl>
+							</div>
 						</div>
 					</div>
 					<div class="row">
@@ -87,43 +108,59 @@
 								</thead>
 
 								<tbody>
-									{#data.transactions.flat}
-										<tr>
-											<td style="text-align:center">{item_code}</td>
-											<td style="text-align:right">{qty}</td>
-											<td style="text-align:center">{unit}</td>
-											<td style="text-align:right">{dr_number}</td>
-											<td style="text-align:right">{type}</td>
-											<td style="text-align:right">{date}</td>
-										</tr>
-									{/data.transactions.flat}
-									<!-- {#data.transactions.tr_in}
-										<tr>
-											<td style="text-align:center">{item_code}</td>
-											<td style="text-align:right">{qty}</td>
-											<td style="text-align:center">{unit}</td>
-											<td style="text-align:right">{dr_number}</td>
-											<td style="text-align:right">{date}</td>
-										</tr>
-									{/data.transactions.tr_in}
-									{#data.transactions.tr_out}
-										<tr>
-											<td style="text-align:center">{item_code}</td>
-											<td style="text-align:right">{qty}</td>
-											<td style="text-align:center">{unit}</td>
-											<td style="text-align:right">{dr_number}</td>
-											<td style="text-align:right">{date}</td>
-										</tr>
-									{/data.transactions.tr_out}
-									{#data.transactions.dr}
-										<tr>
-											<td style="text-align:center">{item_code}</td>
-											<td style="text-align:right">{qty}</td>
-											<td style="text-align:center">{unit}</td>
-											<td style="text-align:right">{dr_number}</td>
-											<td style="text-align:right">{date}</td>
-										</tr>
-									{/data.transactions.dr} -->
+									{@select key=query.type }
+										{@eq value="tr-in"}
+											{#data.transactions.tr_in}
+												<tr>
+													<td style="text-align:center">{item_code}</td>
+													<td style="text-align:right">{qty}</td>
+													<td style="text-align:center">{unit}</td>
+													<td style="text-align:right">{dr_number}</td>
+													<td style="text-align:right">{type}</td>
+													<td style="text-align:right">{date}</td>
+												</tr>
+											{/data.transactions.tr_in}
+										{/eq}
+										{@eq value="tr-out"}
+											{#data.transactions.tr_out}
+												<tr>
+													<td style="text-align:center">{item_code}</td>
+													<td style="text-align:right">{qty}</td>
+													<td style="text-align:center">{unit}</td>
+													<td style="text-align:right">{dr_number}</td>
+													<td style="text-align:right">{type}</td>
+													<td style="text-align:right">{date}</td>
+												</tr>
+											{/data.transactions.tr_out}
+										{/eq}
+										{@eq value="dr"}
+											{#data.transactions.dr}
+												<tr>
+													<td style="text-align:center">{item_code}</td>
+													<td style="text-align:right">{qty}</td>
+													<td style="text-align:center">{unit}</td>
+													<td style="text-align:right">{dr_number}</td>
+													<td style="text-align:right">{type}</td>
+													<td style="text-align:right">{date}</td>
+												</tr>
+											{/data.transactions.dr} 
+										{/eq}
+										{@none}
+											{#data.transactions.flat}
+												<tr>
+													<td style="text-align:center">{item_code}</td>
+													<td style="text-align:right">{qty}</td>
+													<td style="text-align:center">{unit}</td>
+													<td style="text-align:right">{dr_number}</td>
+													<td style="text-align:right">{type}</td>
+													<td style="text-align:right">{date}</td>
+												</tr>
+											{/data.transactions.flat}
+										{/none}
+									{/select}
+									<!-- 
+									
+									-->
 								</tbody>
 							</table>
 						</div>
@@ -139,6 +176,7 @@
 			$('.datepicker').pickadate({
 				format: 'mm/dd/yyyy'
 			});
+			$('select').material_select();
 
 			function validate(form) {
 				var form = $(form);
@@ -150,6 +188,10 @@
 
 				if($('input[name=start]').val().trim().length > 0) {
 					getData.start = $('input[name=start]').val().trim();
+				}
+
+				if($('select[name=type]').val().trim().length > 0) {
+					getData.type = $('select[name=type]').val().trim();
 				}
 
 				if (~window.location.href.indexOf('?')) {

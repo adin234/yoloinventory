@@ -9,6 +9,15 @@
 				max-width: 1000px;
 				margin: 0 auto;
 			}
+
+			#modal1 .file-field > .btn {
+				position: initial;
+			}
+
+			#modal1 .file-path-wrapper > input {
+				width: 100%;
+				margin-left: 0;
+			}
 		</style>
 	</head>
 	<body>
@@ -17,6 +26,9 @@
 				<div class="card-panel">
 					<div class="row">
 						<form class="col m12 s12" method="GET" onSubmit="return validate(this);">
+							<div class="row" style="margin-bottom: -10px;">
+								<a class="modal-trigger"href="#modal1"><i class="material-icons">import_export</i></a>
+							</div>
 							<div class="row">
 								<div class="input-field col m2 offset-m7 s5">
 									<input data-value="{#query}{start}{/query}" name="start" id="startDate" type="text" class="datepicker">
@@ -43,7 +55,7 @@
 										<th style="text-align: center" colspan="1">TR In Qty</th>
 										<th style="text-align: center" colspan="1">TR Out Qyt</th>
 										<th style="text-align: center" colspan="1">Dr Qty</th>
-										<th style="text-align: center" colspan="1">Ending Qty</th>
+										<th style="text-align: center" colspan="2">Ending Qty</th>
 									</tr>
 								</thead>
 
@@ -52,11 +64,25 @@
 										<tr>
 											<td colspan="2"><a href="/inventory/{meta.item_code}">{meta.item_code}</a></td>
 											<td colspan="3">{meta.item_name}</td>
-											<td colspan="1" style="text-align:right">{begin}</td>
-											<td colspan="1" style="text-align:right">{tr_in}</td>
-											<td colspan="1" style="text-align:right">{tr_out}</td>
-											<td colspan="1" style="text-align:right">{dr}</td>
-											<td colspan="1" style="text-align:right">{end}</td>
+											<td colspan="1" style="text-align:right">
+												{@eq key=begin value=0}-{:else}{begin}{/eq}
+											</td>
+											<td colspan="1" style="text-align:right">
+												{@eq key=tr_in value=0}-{:else}{tr_in}{/eq}
+											</td>
+											<td colspan="1" style="text-align:right">
+												{@eq key=tr_out value=0}-{:else}{tr_out}{/eq}
+											</td>
+											<td colspan="1" style="text-align:right">
+												{@eq key=dr value=0}-{:else}{dr}{/eq}
+											</td>
+											<td colspan="1" style="text-align:right">
+												{@eq key=end value=0}-{:else}{end}{/eq}
+											</td>
+											<td colspan="1" style="text-align:left">
+												{@eq key=end value=0}-{:else}{meta.item_unit}{@eq key=end value=1}{:else}S{/eq}{/eq}
+												
+											</td>
 										</tr>
 									{:else}
 										<tr>
@@ -70,13 +96,93 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Modal Structure -->
+		<div id="modal1" class="modal">
+			<div class="modal-content">
+				<h4>Upload</h4>
+				<form action="/upload/items">
+					<div class="file-field input-field row">
+						<div class="btn col s3">
+							<span>ITEMS</span>
+							<input name="items" type="file">
+						</div>
+						<div class="file-path-wrapper col s9">
+							<input class="file-path validate" type="text">
+						</div>
+					</div>
+				</form>
+				<form action="/upload/dr">
+					<div class="file-field input-field row">
+						<div class="btn col s3">
+							<span>DR</span>
+							<input name="dr" type="file">
+						</div>
+						<div class="file-path-wrapper col s9">
+							<input class="file-path validate" type="text">
+						</div>
+					</div>
+				</form>
+				<form action="/upload/tr-in">
+					<div class="file-field input-field row">
+						<div class="btn col s3">
+							<span>TR-IN</span>
+							<input name="dr" type="file">
+						</div>
+						<div class="file-path-wrapper col s9">
+							<input class="file-path validate" type="text">
+						</div>
+					</div>
+				</form>
+				<form action="/upload/tr-out">
+					<div class="file-field input-field row">
+						<div class="btn col s3">
+							<span>TR-OUT</span>
+							<input name="dr" type="file">
+						</div>
+						<div class="file-path-wrapper col s9">
+							<input class="file-path validate" type="text">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+			</div>
+		</div>
 		<!-- Compiled and minified JavaScript -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
-		
+		<script src="//oss.maxcdn.com/jquery.form/3.50/jquery.form.min.js"></script>
+
 		<script type="text/javascript">
 			$('.datepicker').pickadate({
 				format: 'mm/dd/yyyy'
+			});
+
+			$('.modal-trigger').leanModal();
+
+			$('input[type=file]').change(function(self) {
+				var form = $(self.target).parents('form')[0];
+				var fd = new FormData(form);
+				fd.append("label", "WEBUPLOAD");
+				$.ajax({
+					url: form.action,
+					type: "POST",
+					data: fd,
+					enctype: 'multipart/form-data',
+					processData: false,
+					contentType: false,
+					error: function () {
+						alert('Upload Failed');
+					}
+				}).done(function( data ) {
+					var e = $(form);
+					e.wrap('<form>').closest('form').get(0).reset();
+  					e.unwrap();
+
+  					alert('Upload Successful!');
+				});
 			});
 
 			function validate(form) {
