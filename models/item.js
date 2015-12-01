@@ -15,6 +15,17 @@ exports.get_all = (next) => {
 	start();
 }
 
+exports.get_autocomplete = (prefix, next) => {
+    function start() {
+        mysql.use('master')
+            .query('SELECT item_code, item_name FROM items WHERE item_name LIKE ?'+
+                ' OR item_code like ? ORDER BY item_name asc', ['%'+prefix+'%', '%'+prefix+'%'], next)
+            .end();
+    }
+
+    start();
+}
+
 exports.get_item = (code, filter_start, end, next) => {
 	let output = {};
 	let async = 2;

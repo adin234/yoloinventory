@@ -174,3 +174,29 @@ exports.render_item = (req, res, next) => {
 
     exports.get_item_details(req, _res, next);
 }
+
+exports.autocomplete = (req, res, next) => {
+    const data = util.get_data({
+            prefix: ''
+        }, req.query);
+
+
+    function start() {
+        if (data instanceof Error) {
+            throw data
+        }
+        
+        Item.get_autocomplete(data.prefix, send_response);
+    }
+
+    function send_response(err, result) {
+        if (err) {
+            return next(err);
+        }
+
+        res.items(result)
+            .send();
+    }
+
+    start();
+}

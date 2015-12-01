@@ -9,6 +9,7 @@ module.exports = (router) => {
 
     router.del = router.delete;
 
+    router.get('/items/autocomplete', __.item.autocomplete);
     router.get('/items/:id', __.item.get_item_details);
 
     router.post('/upload/items', upload.single('items'), __.transaction.upload_items);
