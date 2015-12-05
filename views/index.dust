@@ -182,6 +182,9 @@
 							$(win.document.body)
 								.css( 'font-size', '10pt' )
 								.prepend(header);
+
+							$(win.document.body).find( 'table' )
+								.css( 'font-size', 'inherit' );
 						},
 						autoPrint: true
 					}],
