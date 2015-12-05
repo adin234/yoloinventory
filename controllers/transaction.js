@@ -134,7 +134,8 @@ exports.upload_items = (req, res, next) => {
         let values = [];
 
         records.forEach(function (item, line) {
-            if (!item.item_name || !item.item_unit || !item.item_name.trim().length || !item.item_unit.trim().length) {
+            if (!item.item_name || !item.item_unit || !item.item_name.trim().length 
+                || !item.item_unit.trim().length || item.item_code.toLowerCase() == 'code') {
                 return errors.push('Didn\'t save', JSON.stringify(item));
             }
 
