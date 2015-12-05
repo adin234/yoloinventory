@@ -4,6 +4,8 @@
 		<!-- Compiled and minified CSS -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link href="//cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" type="text/css" rel="stylesheet"/>
+  		<link href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.dataTables.min.css" type="text/css" rel="stylesheet"/>
 		<style type="text/css">
 			#content {
 				max-width: 1000px;
@@ -44,7 +46,7 @@
 							</div>
 						</form>
 					</div>
-					<div class="row">
+					<div id="meta" class="row">
 						<div class="col s6">
 							<h3>{data.meta.item_name}</h3>
 							<h5>({data.meta.item_code})</h5>
@@ -105,7 +107,7 @@
 					<div class="row">
 						<h4>Transactions</h4>
 						<div class="col m12 s12">
-							<table class="bordered striped responsive-table">
+							<table id="example" class="bordered striped responsive-table">
 								<thead>
 									<tr>
 										<th style="text-align: center">Item Code</th>
@@ -120,11 +122,11 @@
 								<tbody>
 									{@select key=query.type }
 										{@eq value="tr-in"}
-											{#data.transactions.tr_in}
+											{#data.transactions.tr_in ctx=data.meta}
 												<tr>
 													<td style="text-align:center">{item_code}</td>
 													<td style="text-align:right">{qty}</td>
-													<td style="text-align:center">{unit}</td>
+													<td style="text-align:center">{ctx.item_unit}</td>
 													<td style="text-align:right">{dr_number}</td>
 													<td style="text-align:right">{type}</td>
 													<td style="text-align:right">{date}</td>
@@ -132,11 +134,11 @@
 											{/data.transactions.tr_in}
 										{/eq}
 										{@eq value="tr-out"}
-											{#data.transactions.tr_out}
+											{#data.transactions.tr_out ctx=data.meta}
 												<tr>
 													<td style="text-align:center">{item_code}</td>
 													<td style="text-align:right">{qty}</td>
-													<td style="text-align:center">{unit}</td>
+													<td style="text-align:center">{ctx.item_unit}</td>
 													<td style="text-align:right">{dr_number}</td>
 													<td style="text-align:right">{type}</td>
 													<td style="text-align:right">{date}</td>
@@ -144,11 +146,11 @@
 											{/data.transactions.tr_out}
 										{/eq}
 										{@eq value="dr"}
-											{#data.transactions.dr}
+											{#data.transactions.dr ctx=data.meta}
 												<tr>
 													<td style="text-align:center">{item_code}</td>
 													<td style="text-align:right">{qty}</td>
-													<td style="text-align:center">{unit}</td>
+													<td style="text-align:center">{ctx.item_unit}</td>
 													<td style="text-align:right">{dr_number}</td>
 													<td style="text-align:right">{type}</td>
 													<td style="text-align:right">{date}</td>
@@ -156,11 +158,11 @@
 											{/data.transactions.dr} 
 										{/eq}
 										{@none}
-											{#data.transactions.flat}
+											{#data.transactions.flat ctx=data.meta}
 												<tr>
 													<td style="text-align:center">{item_code}</td>
 													<td style="text-align:right">{qty}</td>
-													<td style="text-align:center">{unit}</td>
+													<td style="text-align:center">{ctx.item_unit}</td>
 													<td style="text-align:right">{dr_number}</td>
 													<td style="text-align:right">{type}</td>
 													<td style="text-align:right">{date}</td>
@@ -181,8 +183,38 @@
 		<!-- Compiled and minified JavaScript -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
-		
+		<script src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js" type="text/javascript"></script>
+		<script src="https://cdn.datatables.net/buttons/1.1.0/js/dataTables.buttons.min.js" type="text/javascript"></script>
+		<script src="https://cdn.datatables.net/buttons/1.1.0/js/buttons.print.min.js" type="text/javascript"></script>
+
 		<script type="text/javascript">
+			var table;
+			var header = '<font size="32">OSMOTECH</font><br/>' +
+						'Water Treatment Specialist<br/>' +
+						'Blk 2 -10A Metropolitan Classic Homes, Aguilar Ave. Las Piñas City<br/>' +
+						'403-4642 / 403-4627 / 0925-888-3732<br/>';
+
+			$(document).ready(function() {
+				table = $('#example').DataTable({
+					dom :'Bfrtip',
+					buttons : [{
+						extend: 'print',
+						customize: function ( win ) {
+							$(win.document.body)
+								.css( 'font-size', '10pt' )
+								.prepend($("#meta"))
+								.prepend(header + '<br/>');
+
+							$(win.document.body).find( 'table' )
+								.css( 'font-size', 'inherit' );
+						},
+						autoPrint: true
+					}]
+				});
+
+				table.buttons().container().appendTo($("#buttonContainer"));
+			});
+
 			$('.datepicker').pickadate({
 				format: 'mm/dd/yyyy'
 			});
