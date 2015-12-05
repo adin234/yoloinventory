@@ -12,6 +12,15 @@ exports.upload_transactions = (req, res, next) => {
 
     function start () {
         const file_path = req.file.path;
+        if (
+            (req.params.type == 'tr-in' && !~req.file.originalname.trim().toLowerCase().indexOf("transaction in")) ||
+            (req.params.type == 'tr-out' && !~req.file.originalname.trim().toLowerCase().indexOf("transaction out")) ||
+            (req.params.type == 'dr' && !~req.file.originalname.trim().toLowerCase().indexOf("sales"))
+        ) {
+            return next('Invalid File');
+        }
+
+
         let columns = ['item_code', 'qty', 'tr_date', 'dr_number']; 
 
         parse_csv(file_path, columns, on_new_record, on_error, done);
@@ -57,6 +66,11 @@ exports.upload_transactions = (req, res, next) => {
         let values = [];
 
         records.forEach(function (item, i) {
+            if (!item.item_code || !item.tr_date.trim().length 
+                || !item.dr_number.trim().length || item.item_code.toLowerCase() == 'code') {
+                return errors.push('Didn\'t save', JSON.stringify(item));
+            }
+
             values.push([item.item_code, item.qty,
                 moment(item.tr_date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'), item.dr_number,
                 req.params.type
@@ -77,7 +91,8 @@ exports.upload_transactions = (req, res, next) => {
             return next(err);
         }
 
-        res.send("successfully uploaded");
+        res.items(errors)
+            .send();
     }
 
     start();
