@@ -13,8 +13,8 @@ exports.upload_transactions = (req, res, next) => {
     function start () {
         const file_path = req.file.path;
         if (
-            (req.params.type == 'tr-in' && !~req.file.originalname.trim().toLowerCase().indexOf("transaction in")) ||
-            (req.params.type == 'tr-out' && !~req.file.originalname.trim().toLowerCase().indexOf("transaction out")) ||
+            (req.params.type == 'tr-in' && !~req.file.originalname.trim().toLowerCase().indexOf("transfer in")) ||
+            (req.params.type == 'tr-out' && !~req.file.originalname.trim().toLowerCase().indexOf("transfer out")) ||
             (req.params.type == 'dr' && !~req.file.originalname.trim().toLowerCase().indexOf("sales"))
         ) {
             return next('Invalid File');
