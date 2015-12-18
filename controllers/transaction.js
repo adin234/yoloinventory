@@ -72,7 +72,7 @@ exports.upload_transactions = (req, res, next) => {
             }
 
             values.push([item.item_code, item.qty,
-                moment(item.tr_date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'), item.dr_number,
+                moment(item.tr_date, 'DD-MMM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'), item.dr_number,
                 req.params.type
             ]);
         });
